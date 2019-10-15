@@ -13,6 +13,10 @@ const connection = mysql.createConnection({
     database: 'miniblog'
 });
 
+mongoose.connect( process.env.MONGOURL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
 
 
 app.get('/blogposts', (req, res) => {
@@ -63,10 +67,16 @@ app.post('/blogposts', (req, res) => {
 
 });
 
-app.post('/mongoblogposts', (req, res) => {
+app.post('/mongoblogposts', async (req, res) => {
     //TODO save to mongodb
-});
+      console.log(req.body); 
+    const createdPost = await Post.create(req);
+  
+   
 
+    console.log("1", createdPost)
+
+})()
 
 
 
