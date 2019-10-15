@@ -1,10 +1,12 @@
 const express = require('express');
 const app = express();
 const mysql = require('mysql');
+const Post = require('./Post');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 app.use(express.json());
 app.use('/', express.static('public'));
-
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -13,23 +15,26 @@ const connection = mysql.createConnection({
     database: 'miniblog'
 });
 
-mongoose.connect( process.env.MONGOURL, {
+mongoose.connect(process.env.MONGOURL, {
     useNewUrlParser: true,
+    useCreateIndex: true,
     useUnifiedTopology: true
 });
 
 
-app.get('/blogposts', (req, res) => {
+app.get('/blogposts', async (req, res) => {
     const query = `select * from blogpost order by id desc`;
-
+    const posts = await Post.find()
     connection.query(query,
         (err, rows) => {
             if (err) {
                 console.log('Error: ' + err);
                 return;
             }
-
-            return res.send(rows);
+            return res.send({
+                mysql: rows,
+                mongo: posts
+            });
         });
 })
 
@@ -37,6 +42,7 @@ app.get('/blogposts', (req, res) => {
 
 
 app.post('/blogposts', (req, res) => {
+    console.log(req.body.title)
     if (!(req.body.title || req.body.content)) {
         return res.send({
             error: 'Titel and content required'
@@ -44,7 +50,7 @@ app.post('/blogposts', (req, res) => {
     }
 
     const query = `insert into blogpost (
-                created, title, content
+            createdAt, title, content
                 )
             values (
                 now(),?,?
@@ -64,21 +70,18 @@ app.post('/blogposts', (req, res) => {
                 result: result.id
             });
         });
+})
 
-});
 
 app.post('/mongoblogposts', async (req, res) => {
     //TODO save to mongodb
-      console.log(req.body); 
-    const createdPost = await Post.create(req);
-  
-   
-
+    console.log(req.body);
+    const createdPost = await Post.create(req.body);
     console.log("1", createdPost)
-
-})()
-
-
+    res.json(post)
+})
 
 
-app.listen(3000);
+
+
+app.listen((3000), () => console.log('hey'));
