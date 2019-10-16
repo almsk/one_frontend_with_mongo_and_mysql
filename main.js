@@ -3,17 +3,36 @@ console.log(`19_miniblog`);
 const headlineObj = document.getElementById(`headline`);
 const navObj = document.getElementsByClassName(`navlinks`);
 const contentObj = document.getElementById(`content`);
-
+const mongoDbObj = document.getElementById(`mongodb`);
+const mysqlObj = document.getElementById(`mysql`)
 
 const read = async () => {
     let allcommments = "";
     navObj[0].classList.add(`active`);
     navObj[1].classList.remove(`active`);
+    const url= "";
 
-    const result = await fetch('http://localhost:3000/blogposts');
+//  if (mongoDbObj.checked) {
+//     url = 'http://localhost:3000/mongoblogposts';
+//  }
+//  else {
+//      url = 'http://localhost:3000/blogposts';
+//  }
+    const result = await fetch(url);
     const data = await result.json();
 
-    for (comment of data) {
+    for (let comment of data.mysql) {
+        allcommments += `<div class="singlepost">
+        <div class="commentHeadline">
+        <h4>${comment.id} - ${comment.title}</h4>
+        <p>Erstellt: ${comment.created}</p>
+        </div>
+        <hr></br>
+        <p>${comment.content}<p>
+        </div>
+        `;
+    }
+    for (let comment of data.mongo) {
         allcommments += `<div class="singlepost">
         <div class="commentHeadline">
         <h4>${comment.id} - ${comment.title}</h4>
