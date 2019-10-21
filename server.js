@@ -34,7 +34,7 @@ app.get('/blogposts', async (req, res) => {
             }
             resultmysql= rows;
 
-            const posts = await Post.find().sort({_id: -1})
+            const posts = await Post.find().sort({_id: -1});
             let result = {
                 mysql: rows,
                 mongo: posts}
